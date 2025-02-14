@@ -71,3 +71,47 @@ import pickle
 # Save the dataset as a pickle file
 with open("../dataset/preprocessed_data.pkl", "wb") as f:
     pickle.dump(numeric_df, f)
+
+    
+# Calculate the correlation matrix
+corr_matrix = numeric_df.corr()
+
+# Extract correlations with the target variable 'SI.POV.DDAY'
+poverty_corr = corr_matrix['SI.POV.DDAY']
+
+print(poverty_corr)
+
+# Filter highly correlated indicators
+high_corr_indicators = poverty_corr[(poverty_corr > 0.7) | (poverty_corr < -0.7)]
+print("Highly correlated indicators with SI.POV.DDAY:")
+high_corr_indicators = high_corr_indicators.sort_values(ascending=False)
+print(high_corr_indicators)
+print(high_corr_indicators.to_string()) #to get full list
+
+
+# Check missing values percentage
+missing_percentage = numeric_df[high_corr_indicators.index].isnull().mean() * 100
+print("Percentage of Missing Values in Highly Correlated Indicators")
+print(missing_percentage.sort_values(ascending=False))
+
+print(missing_percentage.describe())
+
+
+# Create DataFrame to display correlation and missing value percentage
+high_corr_summary = pd.DataFrame({
+    'Correlation': high_corr_indicators,
+    'Missing_Percentage': missing_percentage[high_corr_indicators.index]
+})
+
+# Sort by absolute correlation value for better visualization
+high_corr_summary = high_corr_summary.reindex(high_corr_summary['Correlation'].abs().sort_values(ascending=False).index)
+
+# Print summary
+print(high_corr_summary)
+
+print("\n📌 Highly Correlated Indicators with SI.POV.DDAY (Sorted by Correlation Strength)\n")
+for index, row in high_corr_summary.iterrows():
+    print(f"{index}: Correlation = {row['Correlation']:.2f}, Missing = {row['Missing_Percentage']:.2f}%")
+
+
+
