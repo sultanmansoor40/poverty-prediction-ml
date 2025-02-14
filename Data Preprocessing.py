@@ -62,3 +62,12 @@ numeric_df.drop(columns=missing_percentage[missing_percentage > 80].index, inpla
 # Validate that missing values are handled
 print("Missing values after imputation")
 print(numeric_df.isnull().sum())
+
+
+numeric_df.to_csv("dataset/preprocessed_data.csv", index=False)
+
+import pickle
+
+# Save the dataset as a pickle file
+with open("../dataset/preprocessed_data4.pkl", "wb") as f:
+    pickle.dump(numeric_df, f)
