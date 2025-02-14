@@ -179,3 +179,17 @@ gb_results = evaluate_model("Gradient Boosting (Refined)", y_test, gb_prediction
 
 
 
+import requests
+import json
+
+url = 'http://127.0.0.1:8080/predict'
+data = X_train.iloc[0].to_dict()
+
+headers = {'Content-Type': 'application/json'}
+response = requests.post(url, data=json.dumps(data), headers=headers)
+print(response.json())
+
+
+
+
+
