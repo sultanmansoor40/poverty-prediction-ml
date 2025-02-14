@@ -103,3 +103,10 @@ sns.barplot(x='Model', y='R2', data=results_df, palette='viridis')
 plt.title("R-Squared (R²) Score Comparison")
 plt.ylabel("R² Score")
 plt.show()
+
+import pickle
+
+# Save the trained model
+with open('model.pkl', 'wb') as f:
+    pickle.dump(gb_model, f)
+
