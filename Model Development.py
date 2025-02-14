@@ -110,3 +110,72 @@ import pickle
 with open('model.pkl', 'wb') as f:
     pickle.dump(gb_model, f)
 
+
+
+# RANDOM FOREST TUNING
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestRegressor
+
+# Define parameter grid
+param_grid = {
+    "n_estimators": [50, 100, 200],
+    "max_depth": [10, 20, None],
+    "min_samples_split": [2, 5, 10]
+}
+
+# Grid Search
+rf = RandomForestRegressor(random_state=42)
+grid_search = GridSearchCV(rf, param_grid, cv=3, scoring="r2", verbose=2, n_jobs=-1)
+grid_search.fit(X_train, y_train)
+
+print("Best Parameters:", grid_search.best_params_)
+# RANDOM FOREST TUNING
+
+#GRADIENT BOOST TUNING
+from sklearn.ensemble import GradientBoostingRegressor
+
+# Define parameter grid
+param_grid = {
+    "n_estimators": [50, 100, 200],
+    "learning_rate": [0.01, 0.1, 0.2],
+    "max_depth": [3, 5, 10]
+}
+
+# Grid Search
+gb = GradientBoostingRegressor(random_state=42)
+grid_search = GridSearchCV(gb, param_grid, cv=3, scoring="r2", verbose=2, n_jobs=-1)
+grid_search.fit(X_train, y_train)
+
+print("Best Parameters:", grid_search.best_params_)
+#GRADIENT BOOST TUNING
+
+#TEST THE MODEL REFINEMENT
+#Get the best model from Grid Search
+best_rf = grid_search.best_estimator_  # For Random Forest
+best_gb = grid_search.best_estimator_  # For Gradient Boosting
+
+# Train the best models
+best_rf.fit(X_train, y_train)
+best_gb.fit(X_train, y_train)
+
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+# Function to evaluate model
+def evaluate_model(model_name, y_test, y_pred):
+    mae = mean_absolute_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+
+    print(f"\n📌 {model_name} Model Performance (After Refinement):")
+    print(f"Mean Absolute Error (MAE): {mae:.4f}")
+    print(f"Mean Squared Error (MSE): {mse:.4f}")
+    print(f"R-Squared (R²): {r2:.4f}")
+
+    return {'Model': model_name, 'MAE': mae, 'MSE': mse, 'R2': r2}
+
+# Evaluate the refined models
+rf_results = evaluate_model("Random Forest (Refined)", y_test, rf_predictions)
+gb_results = evaluate_model("Gradient Boosting (Refined)", y_test, gb_predictions)
+
+
+
